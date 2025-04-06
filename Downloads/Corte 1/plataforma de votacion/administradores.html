@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administración de Votaciones</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .estado-votacion {
+            padding: 10px;
+            margin: 15px 0;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .activa {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .inactiva {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .config-panel {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="datetime-local"] {
+            padding: 8px;
+            width: 100%;
+            max-width: 300px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0069d9;
+        }
+    </style>
+</head>
+<body>
+    <h1>Administración de Votaciones</h1>
+    
+    <div id="estadoVotacion" class="estado-votacion">
+        Estado de la votación no disponible
+    </div>
+    
+    <div class="config-panel">
+        <h2>Configuración de Tiempo</h2>
+        <div class="form-group">
+            <label for="horaInicio">Hora de Inicio:</label>
+            <input type="datetime-local" id="horaInicio">
+        </div>
+        <div class="form-group">
+            <label for="horaFin">Hora de Fin:</label>
+            <input type="datetime-local" id="horaFin">
+        </div>
+        <button onclick="guardarConfiguracion()">Guardar Configuración</button>
+    </div>
+    
+    <div id="conteoVotos">
+        <h2>Conteo de Votos</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Representante</th>
+                    <th>Votos</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Juan Pérez</td>
+                    <td id="votosJuan">0</td>
+                </tr>
+                <tr>
+                    <td>María López</td>
+                    <td id="votosMaria">0</td>
+                </tr>
+                <tr>
+                    <td>Carlos Gómez</td>
+                    <td id="votosCarlos">0</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="config-panel">
+        <h2>Acciones Administrativas</h2>
+        <button onclick="reiniciarVotos()">Reiniciar Votos</button>
+        <button onclick="exportarDatos()">Exportar Datos</button>
+    </div>
+
+    <script>
+        // Función para guardar la configuración del tiempo
+        function guardarConfiguracion() {
+            const inicio = document.getElementById('horaInicio').value;
+            const fin = document.getElementById('horaFin').value;
+            
+            if (!inicio || !fin) {
+                alert('Por favor complete ambas fechas');
+                return;
+            }
+            
+            if (new Date(fin) <= new Date(inicio)) {
+                alert('La hora de fin debe ser posterior a la hora de inicio');
+                return;
+            }
+            
+            // Llamar a la función de configuración
+            configurarTiempoVotacion(inicio, fin);
+        }
+        
+        // Función para reiniciar los votos
+        function reiniciarVotos() {
+            if (confirm('¿Está seguro que desea reiniciar todos los votos? Esta acción no se puede deshacer.')) {
+                localStorage.setItem('votosRegistrados', JSON.stringify([]));
+                cargarTablaVotos();
+                alert('Votos reiniciados correctamente');
+            }
+        }
+        
+        // Función para exportar datos
+        function exportarDatos() {
+            const votos = JSON.parse(localStorage.getItem('votosRegistrados')) || [];
+            const config = JSON.parse(localStorage.getItem('configVotacion')) || {};
+            
+            const datos = {
+                configuracion: config,
+                votos: votos,
+                conteo: contarVotos(),
+                fechaExportacion: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(datos, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `votacion_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+    </script>
+    
+    <script src="administradores.js"></script>
+</body>
+</html>

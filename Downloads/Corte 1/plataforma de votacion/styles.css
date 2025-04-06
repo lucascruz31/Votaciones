@@ -1,0 +1,227 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #1a1a2e;
+    color: #eaeaea;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+h1, h2 {
+    color: #f9f871;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+#inicioSesion {
+    background-color: #16213e;
+    padding: 40px 60px; /* Ajustar el padding horizontal y vertical */
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    margin: 20px auto;
+    max-width: 800px;
+    text-align: center;
+}
+
+#representantes, #conteoVotos {
+    background-color: #16213e;
+    padding: 80px;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    margin: 20px auto;
+    max-width: 800px; /* Incrementar el ancho */
+    text-align: center;
+}
+
+#inicioSesion h2, #representantes h2, #conteoVotos h2 {
+    margin-bottom: 20px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+form label {
+    font-weight: 600;
+    color: #f9f871;
+}
+
+form input, form select {
+    width: 100%;
+    max-width: 600px; /* Incrementar el ancho máximo */
+    padding: 12px; /* Incrementar el padding */
+    border: 3px solid #0f3460; /* Bordes más amplios */
+    border-radius: 10px; /* Bordes más redondeados */
+    background-color: #1a1a2e;
+    color: #eaeaea;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    box-sizing: border-box; /* Asegurar que el padding no afecte el ancho */
+}
+
+form select {
+    display: block; /* Asegurar que se comporte como los otros campos */
+    margin: 0; /* Eliminar márgenes adicionales */
+}
+
+form input:focus, form select:focus {
+    border-color: #f9f871;
+    outline: none;
+    box-shadow: 0 0 10px rgba(249, 248, 113, 0.7); /* Sombra más visible */
+}
+
+form button {
+    width: 100%;
+    max-width: 600px; /* Incrementar el ancho máximo */
+    background-color: #0f3460;
+    color: #eaeaea;
+    border: 3px solid #0f3460; /* Bordes más amplios */
+    padding: 14px 22px; /* Incrementar el padding */
+    border-radius: 10px; /* Bordes más redondeados */
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+form button:hover {
+    background-color: #f9f871;
+    color: #1a1a2e;
+    border-color: #f9f871; /* Cambiar el color del borde al pasar el cursor */
+    box-shadow: 0 6px 12px rgba(249, 248, 113, 0.7); /* Sombra más visible */
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    max-width: 800px; /* Incrementar el ancho máximo */
+    margin: 0 auto;
+}
+
+li {
+    background-color: #0f3460;
+    margin: 15px 0;
+    padding: 20px; /* Incrementar el padding */
+    border-radius: 12px; /* Bordes más redondeados */
+    border: 3px solid #f9f871; /* Bordes más amplios */
+    color: #eaeaea;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+li:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(15, 52, 96, 0.5); /* Sombra más visible */
+}
+
+.foto-representante {
+    width: 120px; /* Incrementar el tamaño */
+    height: 120px; /* Incrementar el tamaño */
+    border-radius: 50%;
+    border: 3px solid #f9f871; /* Bordes más amplios */
+    object-fit: cover; /* Asegurar que la imagen se ajuste al contenedor */
+    margin-right: 15px;
+}
+
+#representantes ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex; /* Hacer que los elementos sean horizontales */
+    gap: 20px; /* Espaciado entre los elementos */
+    overflow-x: auto; /* Permitir desplazamiento horizontal si es necesario */
+}
+
+#representantes li {
+    display: flex;
+    flex-direction: column; /* Alinear contenido verticalmente dentro de cada tarjeta */
+    align-items: center;
+    background-color: #0f3460;
+    padding: 15px;
+    border-radius: 12px;
+    border: 3px solid #f9f871;
+    color: #eaeaea;
+    min-width: 250px; /* Ancho mínimo para cada tarjeta */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+#representantes li:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(15, 52, 96, 0.5);
+}
+
+.info-representante {
+    text-align: center;
+}
+
+.propuesta {
+    background-color: #1a1a2e;
+    color: #fff;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 10px 0;
+}
+
+.btn-votar {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.btn-votar:hover {
+    background-color: #0056b3;
+}
+
+table {
+    width: 100%;
+    max-width: 800px; /* Incrementar el ancho máximo */
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table th, table td {
+    border: 3px solid #0f3460; /* Bordes más amplios */
+    padding: 12px; /* Incrementar el padding */
+    text-align: center;
+    color: #eaeaea;
+}
+
+table th {
+    background-color: #f9f871;
+    color: #1a1a2e;
+    font-weight: 700;
+    border: 3px solid #f9f871; /* Bordes más amplios */
+}
+
+table tr:nth-child(even) {
+    background-color: #1a1a2e;
+}
+
+table tr:nth-child(odd) {
+    background-color: #16213e;
+}
+
+#mensaje, #mensajeVotacion {
+    margin-top: 10px;
+    font-weight: 600;
+    color: #f9f871;
+    text-align: center;
+}

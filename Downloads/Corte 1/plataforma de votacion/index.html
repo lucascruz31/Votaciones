@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plataforma de Votaciones</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="inicioSesion">
+        <h2>Inicio de Sesión</h2>
+        <form id="formInicioSesion">
+            <label for="usuario">Usuario:</label>
+            <input type="text" id="usuario" placeholder="Ingresa tu usuario" required>
+
+            <label for="password">Contraseña:</label>
+            <input type="password" id="password" placeholder="Ingresa tu contraseña" required>
+
+            <label for="rol">Seleccione su Rol:</label>
+            <select id="rol" required>
+                <option value="" disabled selected>Selecciona tu rol</option>
+                <option value="estudiante">Estudiante</option>
+                <option value="administrador">Administrador</option>
+            </select>
+
+            <button type="submit">Iniciar Sesión</button>
+        </form>
+        <div id="mensaje"></div>
+    </div>
+
+    <script src="index.js"></script>
+</body>
+</html>
