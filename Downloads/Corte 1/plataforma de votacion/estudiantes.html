@@ -5,16 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Votaciones Estudiantiles</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        .estado-votacion {
+            padding: 10px;
+            margin: 15px 0;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+            background-color: #16213e;
+            color: #eaeaea;
+        }
+        .activa {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .inactiva {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
 </head>
 <body>
     <h1>Votaciones Estudiantiles</h1>
-    <!-- Reemplazar la lista estática de representantes por esta versión dinámica -->
-<div id="representantes">
-    <h2>Representantes</h2>
-    <ul id="listaRepresentantes">
-        <!-- Los representantes se cargarán dinámicamente desde JavaScript -->
-    </ul>
-</div>
+    
+    <div id="estadoVotacion" class="estado-votacion">
+        Estado de la votación no disponible
+    </div>
+    
+    <div id="representantes">
+        <h2>Candidatos</h2>
+        <div id="mensajeVotacion"></div>
+        <ul id="listaRepresentantes">
+            <!-- Los representantes se cargarán dinámicamente desde JavaScript -->
+        </ul>
+    </div>
+
     <script src="estudiantes.js"></script>
 </body>
 </html>

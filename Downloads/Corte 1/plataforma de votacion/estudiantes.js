@@ -1,134 +1,112 @@
-// Almacenamiento de votos
-let votosRegistrados = JSON.parse(localStorage.getItem('votosRegistrados')) || [];
-// Agregar estas funciones al inicio del archivo
-
-// Función para cargar los candidatos desde localStorage
-function cargarCandidatos() {
-    return JSON.parse(localStorage.getItem('candidatosVotacion')) || [];
+// Función para verificar si la votación está activa
+function estaVotacionActiva() {
+    const config = JSON.parse(localStorage.getItem('configVotacion')) || {};
+    if (!config.horaInicio || !config.horaFin) return false;
+    
+    const ahora = new Date().getTime();
+    return ahora >= config.horaInicio && ahora <= config.horaFin;
 }
 
-// Función para mostrar los candidatos en la página
-// Modificación en la función mostrarCandidatos para manejar lista vacía
-// Función mostrarCandidatos actualizada
+// Función para mostrar el estado de la votación
+function mostrarEstadoVotacion() {
+    const estadoElement = document.getElementById('estadoVotacion');
+    if (!estadoElement) return;
+
+    if (estaVotacionActiva()) {
+        estadoElement.textContent = 'Votación ACTIVA - Puedes votar ahora';
+        estadoElement.className = 'estado-votacion activa';
+    } else {
+        estadoElement.textContent = 'Votación INACTIVA - No puedes votar en este momento';
+        estadoElement.className = 'estado-votacion inactiva';
+    }
+}
+
+// Función para cargar y mostrar los candidatos
 function mostrarCandidatos() {
     const candidatos = JSON.parse(localStorage.getItem('candidatos')) || [];
-    const lista = document.getElementById('listaCandidatos');
+    const lista = document.getElementById('listaRepresentantes');
+    const mensajeElement = document.getElementById('mensajeVotacion');
     
     if (!lista) return;
     
     lista.innerHTML = '';
     
+    if (candidatos.length === 0) {
+        lista.innerHTML = `
+            <li style="text-align: center; padding: 20px; color: #aaa;">
+                No hay candidatos disponibles para votación.<br>
+                Por favor, consulta con los administradores.
+            </li>
+        `;
+        return;
+    }
+    
     candidatos.forEach(cand => {
         const li = document.createElement('li');
         li.innerHTML = `
-            <img src="imagenes/${cand.foto}" alt="${cand.nombre}" class="foto-candidato">
+            <img src="imagenes/${cand.foto || 'default.jpg'}" alt="${cand.nombre}" class="foto-candidato">
             <div class="info-candidato">
-                <strong>${cand.nombre}</strong>
-                <div class="propuesta">${cand.eslogan}</div>
-                <button class="btn-votar" onclick="votar('${cand.nombre}')">Votar</button>
+                <h3>${cand.nombre}</h3>
+                <div class="eslogan">"${cand.eslogan || 'Sin eslogan'}"</div>
+                <button class="btn-votar" onclick="votar('${cand.nombre}')" ${!estaVotacionActiva() ? 'disabled' : ''}>
+                    ${estaVotacionActiva() ? 'Votar' : 'Votación cerrada'}
+                </button>
             </div>
         `;
         lista.appendChild(li);
     });
 }
 
-// Función auxiliar para obtener el nombre de archivo de la imagen
-function obtenerNombreArchivo(nombreCompleto) {
-    // Convierte "Juan Pérez" a "juan" (minúsculas, sin apellido)
-    return nombreCompleto.split(' ')[0].toLowerCase();
-}
-
-// Función para obtener la propuesta según el candidato (puedes personalizar esto)
-function obtenerPropuesta(candidato) {
-    const propuestas = {
-        "Juan Pérez": "Promete mejorar las instalaciones deportivas y organizar más actividades extracurriculares.",
-        "María López": "Propone implementar un programa de tutorías entre estudiantes y mejorar la biblioteca.",
-        "Carlos Gómez": "Se compromete a fomentar el reciclaje y crear un club de ciencias."
-    };
-    
-    return propuestas[candidato] || "Este candidato no ha registrado una propuesta aún.";
-}
-
-// Modificar el evento DOMContentLoaded para cargar los candidatos
-document.addEventListener('DOMContentLoaded', () => {
-    mostrarCandidatos();
-    
-    // Verificar si hay una configuración de tiempo activa
+// Función para registrar un voto
+async function votar(representante) {
     if (!estaVotacionActiva()) {
         alert('La votación no está activa en este momento.');
-    }
-});
-
-function togglePropuesta(element) {
-    const propuesta = element.nextElementSibling;
-    propuesta.style.display = propuesta.style.display === 'block' ? 'none' : 'block';
-}
-
-function mostrarPropuesta(element) {
-    const allPropuestas = document.querySelectorAll('.propuesta');
-    allPropuestas.forEach(propuesta => propuesta.style.display = 'none');
-    const propuesta = element.querySelector('.propuesta');
-    propuesta.style.display = 'block';
-}
-
-function ocultarPropuesta(element) {
-    const propuesta = element.querySelector('.propuesta');
-    propuesta.style.display = 'none';
-}
-
-// Modificar la función votar para usar los candidatos de localStorage
-// Modificar la función votar para verificar los límites
-async function votar(representante) {
-    try {
-        // Verificación de candidato (existente)
-        const candidatosActuales = JSON.parse(localStorage.getItem('candidatosVotacion')) || [];
-        if (!candidatosActuales.includes(representante)) {
-            alert('El candidato seleccionado ya no está disponible para votación');
-            return false;
-        }
-        
-        // Verificar límites máximos
-        const limites = JSON.parse(localStorage.getItem('limitesVotos')) || {};
-        if (limites.maximos && limites.maximos !== Infinity) {
-            const totalVotos = Object.values(contarVotos()).reduce((a, b) => a + b, 0);
-            if (totalVotos >= limites.maximos) {
-                alert('Se ha alcanzado el límite máximo de votos. La votación está completa.');
-                return false;
-            }
-        }
-        
-        // Resto de la función (verificación de usuario, registro de voto, etc.)
-        // ...
-        
-    } catch (error) {
-        console.error('Error al registrar voto:', error);
         return false;
     }
-}
 
-// Función para verificar si la votación está activa
-function estaVotacionActiva() {
-    const config = JSON.parse(localStorage.getItem('configVotacion')) || {};
-    if (!config.horaInicio || !config.horaFin) return true; // Permitir si no hay configuración
+    // Verificar límites de votación
+    const limites = JSON.parse(localStorage.getItem('limitesVotos')) || {};
+    const votosRegistrados = JSON.parse(localStorage.getItem('votosRegistrados')) || [];
     
-    const ahora = new Date().getTime();
-    return ahora >= config.horaInicio && ahora <= config.horaFin;
-}
-
-// Función para obtener IP (opcional)
-async function obtenerIP() {
-    try {
-        const response = await fetch('https://api.ipify.org?format=json');
-        const data = await response.json();
-        return data.ip || 'desconocida';
-    } catch {
-        return 'desconocida';
+    if (limites.maximos && limites.maximos !== Infinity) {
+        const totalVotos = votosRegistrados.length;
+        if (totalVotos >= limites.maximos) {
+            alert('Se ha alcanzado el límite máximo de votos. La votación está completa.');
+            return false;
+        }
     }
+
+    // Simular ID de usuario (en una aplicación real usarías autenticación)
+    const userId = sessionStorage.getItem('userId') || `temp_${Math.random().toString(36).substr(2, 9)}`;
+    sessionStorage.setItem('userId', userId);
+
+    // Verificar si el usuario ya votó
+    const yaVoto = votosRegistrados.some(voto => voto.usuarioId === userId);
+    if (yaVoto) {
+        alert('Ya has registrado tu voto.');
+        return false;
+    }
+
+    // Registrar el nuevo voto
+    votosRegistrados.push({
+        usuarioId: userId,
+        representante: representante,
+        fecha: new Date().toISOString()
+    });
+
+    localStorage.setItem('votosRegistrados', JSON.stringify(votosRegistrados));
+    alert(`¡Voto registrado para ${representante}! Gracias por participar.`);
+    return true;
 }
 
-// Función para cerrar sesión
-function cerrarSesion() {
-    sessionStorage.removeItem('userId');
-    sessionStorage.removeItem('userName');
-    localStorage.removeItem('sesionTemporal');
-}
+// Mostrar candidatos y estado al cargar la página
+document.addEventListener('DOMContentLoaded', () => {
+    mostrarEstadoVotacion();
+    mostrarCandidatos();
+    
+    // Verificar cada minuto si cambia el estado
+    setInterval(() => {
+        mostrarEstadoVotacion();
+        mostrarCandidatos();
+    }, 60000);
+});
