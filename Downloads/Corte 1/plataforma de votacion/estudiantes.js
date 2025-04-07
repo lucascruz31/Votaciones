@@ -8,22 +8,24 @@ function cargarCandidatos() {
 }
 
 // Función para mostrar los candidatos en la página
+// Modificación en la función mostrarCandidatos para manejar lista vacía
+// Función mostrarCandidatos actualizada
 function mostrarCandidatos() {
-    const candidatos = cargarCandidatos();
-    const lista = document.getElementById('listaRepresentantes');
+    const candidatos = JSON.parse(localStorage.getItem('candidatos')) || [];
+    const lista = document.getElementById('listaCandidatos');
     
     if (!lista) return;
     
     lista.innerHTML = '';
     
-    candidatos.forEach(candidato => {
+    candidatos.forEach(cand => {
         const li = document.createElement('li');
         li.innerHTML = `
-            <img src="imagenes/${obtenerNombreArchivo(candidato)}.jpg" alt="${candidato}" class="foto-representante">
-            <div class="info-representante">
-                <strong>${candidato}</strong>
-                <div class="propuesta">${obtenerPropuesta(candidato)}</div>
-                <button class="btn-votar" onclick="votar('${candidato}')">Votar</button>
+            <img src="imagenes/${cand.foto}" alt="${cand.nombre}" class="foto-candidato">
+            <div class="info-candidato">
+                <strong>${cand.nombre}</strong>
+                <div class="propuesta">${cand.eslogan}</div>
+                <button class="btn-votar" onclick="votar('${cand.nombre}')">Votar</button>
             </div>
         `;
         lista.appendChild(li);

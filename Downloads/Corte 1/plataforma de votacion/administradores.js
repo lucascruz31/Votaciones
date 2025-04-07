@@ -141,19 +141,17 @@ function mostrarEstadoVotacion() {
     }
 }
 
-// Función para cargar los candidatos desde localStorage
+// Variables globales para el modo edición
+let candidatoEnEdicion = null;
+
+// Función para cargar candidatos desde localStorage
 function cargarCandidatos() {
-    const candidatos = JSON.parse(localStorage.getItem('candidatosVotacion')) || [
-        "Juan Pérez",
-        "María López",
-        "Carlos Gómez"
-    ];
-    return candidatos;
+    return JSON.parse(localStorage.getItem('candidatos')) || [];
 }
 
-// Función para guardar los candidatos en localStorage
+// Función para guardar candidatos
 function guardarCandidatos(candidatos) {
-    localStorage.setItem('candidatosVotacion', JSON.stringify(candidatos));
+    localStorage.setItem('candidatos', JSON.stringify(candidatos));
 }
 
 // Función para mostrar la lista de candidatos
@@ -165,20 +163,59 @@ function mostrarCandidatos() {
     
     lista.innerHTML = '';
     
-    candidatos.forEach((candidato, index) => {
+    if (candidatos.length === 0) {
+        lista.innerHTML = `
+            <li style="text-align: center; padding: 20px; color: #aaa;">
+                No hay candidatos registrados aún.<br>
+                Agrega el primero usando el formulario.
+            </li>
+        `;
+        return;
+    }
+    
+    candidatos.forEach((cand, index) => {
         const li = document.createElement('li');
         li.innerHTML = `
-            ${candidato}
-            <button onclick="eliminarCandidato(${index})" class="btn-eliminar">Eliminar</button>
+            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
+                <img src="imagenes/${cand.foto}" alt="${cand.nombre}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
+                <div>
+                    <strong>${cand.nombre}</strong><br>
+                    <small>${cand.eslogan}</small>
+                </div>
+            </div>
+            <div style="display: flex; gap: 5px;">
+                <button onclick="editarCandidato(${index})" class="btn-editar">Editar</button>
+                <button onclick="eliminarCandidato(${index})" class="btn-eliminar">Eliminar</button>
+            </div>
         `;
         lista.appendChild(li);
     });
 }
 
-// Función para agregar un nuevo candidato
-function agregarCandidato() {
-    const input = document.getElementById('nuevoCandidato');
-    const nombre = input.value.trim();
+// Función para manejar la subida de fotos
+function subirFoto() {
+    return new Promise((resolve) => {
+        const inputFoto = document.getElementById('fotoCandidato');
+        const file = inputFoto.files[0];
+        
+        if (!file) {
+            resolve(null);
+            return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const nombreArchivo = `cand_${Date.now()}.${file.name.split('.').pop()}`;
+            resolve(nombreArchivo);
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+// Función para agregar o editar candidato
+async function agregarEditarCandidato() {
+    const nombre = document.getElementById('nombreCandidato').value.trim();
+    const eslogan = document.getElementById('esloganCandidato').value.trim();
     
     if (!nombre) {
         alert('Por favor ingrese un nombre válido');
@@ -186,35 +223,83 @@ function agregarCandidato() {
     }
     
     const candidatos = cargarCandidatos();
+    const nombreFoto = await subirFoto();
     
-    if (candidatos.includes(nombre)) {
-        alert('Este candidato ya existe');
-        return;
+    if (candidatoEnEdicion !== null) {
+        // Modo edición
+        const candOriginal = candidatos[candidatoEnEdicion];
+        
+        candidatos[candidatoEnEdicion] = {
+            nombre: nombre,
+            eslogan: eslogan,
+            foto: nombreFoto || candOriginal.foto
+        };
+        
+        alert('Candidato actualizado correctamente');
+    } else {
+        // Modo agregar
+        if (candidatos.some(cand => cand.nombre.toLowerCase() === nombre.toLowerCase())) {
+            alert('Ya existe un candidato con ese nombre');
+            return;
+        }
+        
+        candidatos.push({
+            nombre: nombre,
+            eslogan: eslogan,
+            foto: nombreFoto || 'default.jpg'
+        });
+        
+        alert('Candidato agregado correctamente');
     }
     
-    candidatos.push(nombre);
     guardarCandidatos(candidatos);
     mostrarCandidatos();
-    input.value = '';
-    alert('Candidato agregado correctamente');
+    limpiarFormularioCandidato();
+}
+
+// Función para editar un candidato
+function editarCandidato(index) {
+    const candidatos = cargarCandidatos();
+    const cand = candidatos[index];
     
-    // Actualizar la tabla de votos si es necesario
-    cargarTablaVotos();
+    document.getElementById('nombreCandidato').value = cand.nombre;
+    document.getElementById('esloganCandidato').value = cand.eslogan;
+    
+    candidatoEnEdicion = index;
+    
+    document.getElementById('btnAccionCandidato').textContent = 'Guardar Cambios';
+    document.getElementById('btnCancelarEdicion').style.display = 'inline-block';
+}
+
+// Función para cancelar edición
+function cancelarEdicion() {
+    limpiarFormularioCandidato();
+}
+
+// Función para limpiar el formulario
+function limpiarFormularioCandidato() {
+    document.getElementById('nombreCandidato').value = '';
+    document.getElementById('esloganCandidato').value = '';
+    document.getElementById('fotoCandidato').value = '';
+    
+    candidatoEnEdicion = null;
+    document.getElementById('btnAccionCandidato').textContent = 'Agregar';
+    document.getElementById('btnCancelarEdicion').style.display = 'none';
 }
 
 // Función para eliminar un candidato
 function eliminarCandidato(index) {
-    if (!confirm('¿Está seguro que desea eliminar este candidato? Todos los votos asociados también se eliminarán.')) {
+    if (!confirm('¿Está seguro que desea eliminar este candidato? Todos sus votos también se eliminarán.')) {
         return;
     }
     
     const candidatos = cargarCandidatos();
-    const candidatoEliminado = candidatos.splice(index, 1);
+    const candEliminado = candidatos.splice(index, 1)[0];
     guardarCandidatos(candidatos);
     
-    // Eliminar votos asociados a este candidato
+    // Eliminar votos asociados
     const votos = JSON.parse(localStorage.getItem('votosRegistrados')) || [];
-    const nuevosVotos = votos.filter(voto => voto.representante !== candidatoEliminado[0]);
+    const nuevosVotos = votos.filter(voto => voto.candidato !== candEliminado.nombre);
     localStorage.setItem('votosRegistrados', JSON.stringify(nuevosVotos));
     
     mostrarCandidatos();
@@ -222,33 +307,33 @@ function eliminarCandidato(index) {
     alert('Candidato eliminado correctamente');
 }
 
-// Modificar la función contarVotos para usar los candidatos de localStorage
+// Modificar la función contarVotos para usar los candidatos actuales
 function contarVotos() {
     const candidatos = cargarCandidatos();
     const conteo = {};
     
-    // Inicializar conteo para cada candidato
-    candidatos.forEach(candidato => {
-        conteo[candidato] = 0;
+    candidatos.forEach(cand => {
+        conteo[cand.nombre] = 0;
     });
     
     const votosRegistrados = JSON.parse(localStorage.getItem('votosRegistrados')) || [];
     
     votosRegistrados.forEach(voto => {
-        if (conteo[voto.representante] !== undefined) {
-            conteo[voto.representante]++;
+        if (conteo[voto.candidato] !== undefined) {
+            conteo[voto.candidato]++;
         }
     });
     
     return conteo;
 }
 
-// Modificar el evento DOMContentLoaded para incluir mostrarCandidatos
+// Actualizar el evento DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {
     verificarEstadoVotacion();
     cargarTablaVotos();
     mostrarEstadoVotacion();
     mostrarCandidatos();
+    mostrarEstadoLimites();
     
     setInterval(() => {
         verificarEstadoVotacion();

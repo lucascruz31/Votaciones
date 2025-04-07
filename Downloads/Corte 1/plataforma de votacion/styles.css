@@ -304,3 +304,16 @@ table tr:nth-child(odd) {
     min-width: 250px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
+/* Agregar estos estilos para el estado vacío */
+#representantesLista li[style*="text-align: center"] {
+    background: none !important;
+    border: 2px dashed #f9f871 !important;
+    color: #f9f871 !important;
+}
+
+#listaRepresentantes li[style*="text-align: center"] {
+    background: none !important;
+    border: 2px dashed #f9f871 !important;
+    color: #f9f871 !important;
+    font-style: italic;
+}

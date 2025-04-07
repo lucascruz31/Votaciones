@@ -91,7 +91,7 @@
             <!-- Aquí se mostrará el estado actual -->
         </div>
     </div>
-    
+
     <!-- Reemplazar la tabla estática por una dinámica -->
     <div id="conteoVotos">
         <h2>Conteo de Votos</h2>
@@ -108,18 +108,34 @@
         </table>
     </div>
     <!-- Agregar esta sección antes del div de Acciones Administrativas -->
+    <!-- Panel de Gestión de Candidatos actualizado -->
     <div class="config-panel">
         <h2>Gestión de Candidatos</h2>
-        <div id="listaCandidatos">
+        
+        <div id="listaCandidatosAdmin">
             <h3>Candidatos Actuales</h3>
             <ul id="candidatosLista">
                 <!-- Los candidatos se cargarán dinámicamente -->
             </ul>
         </div>
+        
         <div class="form-group">
-            <label for="nuevoCandidato">Agregar Nuevo Candidato:</label>
-            <input type="text" id="nuevoCandidato" placeholder="Nombre del candidato">
-            <button onclick="agregarCandidato()">Agregar</button>
+            <h3>Agregar/Editar Candidato</h3>
+            
+            <label for="nombreCandidato">Nombre Completo:</label>
+            <input type="text" id="nombreCandidato" placeholder="Ej: Juan Pérez">
+            
+            <label for="esloganCandidato">Eslogan de Campaña:</label>
+            <textarea id="esloganCandidato" rows="3" placeholder="Ej: ¡Por una educación más inclusiva!"></textarea>
+            
+            <label for="fotoCandidato">Foto del Candidato:</label>
+            <input type="file" id="fotoCandidato" accept="image/*">
+            <small>Solo imágenes JPG/PNG (300x300px recomendado)</small>
+            
+            <div style="display: flex; gap: 10px; margin-top: 15px;">
+                <button onclick="agregarEditarCandidato()" id="btnAccionCandidato">Agregar</button>
+                <button onclick="cancelarEdicion()" id="btnCancelarEdicion" style="display: none; background-color: #6c757d;">Cancelar</button>
+            </div>
         </div>
     </div>
     <div class="config-panel">
