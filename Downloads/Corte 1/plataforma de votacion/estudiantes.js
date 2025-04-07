@@ -1,5 +1,61 @@
 // Almacenamiento de votos
 let votosRegistrados = JSON.parse(localStorage.getItem('votosRegistrados')) || [];
+// Agregar estas funciones al inicio del archivo
+
+// Función para cargar los candidatos desde localStorage
+function cargarCandidatos() {
+    return JSON.parse(localStorage.getItem('candidatosVotacion')) || [];
+}
+
+// Función para mostrar los candidatos en la página
+function mostrarCandidatos() {
+    const candidatos = cargarCandidatos();
+    const lista = document.getElementById('listaRepresentantes');
+    
+    if (!lista) return;
+    
+    lista.innerHTML = '';
+    
+    candidatos.forEach(candidato => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+            <img src="imagenes/${obtenerNombreArchivo(candidato)}.jpg" alt="${candidato}" class="foto-representante">
+            <div class="info-representante">
+                <strong>${candidato}</strong>
+                <div class="propuesta">${obtenerPropuesta(candidato)}</div>
+                <button class="btn-votar" onclick="votar('${candidato}')">Votar</button>
+            </div>
+        `;
+        lista.appendChild(li);
+    });
+}
+
+// Función auxiliar para obtener el nombre de archivo de la imagen
+function obtenerNombreArchivo(nombreCompleto) {
+    // Convierte "Juan Pérez" a "juan" (minúsculas, sin apellido)
+    return nombreCompleto.split(' ')[0].toLowerCase();
+}
+
+// Función para obtener la propuesta según el candidato (puedes personalizar esto)
+function obtenerPropuesta(candidato) {
+    const propuestas = {
+        "Juan Pérez": "Promete mejorar las instalaciones deportivas y organizar más actividades extracurriculares.",
+        "María López": "Propone implementar un programa de tutorías entre estudiantes y mejorar la biblioteca.",
+        "Carlos Gómez": "Se compromete a fomentar el reciclaje y crear un club de ciencias."
+    };
+    
+    return propuestas[candidato] || "Este candidato no ha registrado una propuesta aún.";
+}
+
+// Modificar el evento DOMContentLoaded para cargar los candidatos
+document.addEventListener('DOMContentLoaded', () => {
+    mostrarCandidatos();
+    
+    // Verificar si hay una configuración de tiempo activa
+    if (!estaVotacionActiva()) {
+        alert('La votación no está activa en este momento.');
+    }
+});
 
 function togglePropuesta(element) {
     const propuesta = element.nextElementSibling;

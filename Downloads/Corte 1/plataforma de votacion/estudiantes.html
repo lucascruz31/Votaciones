@@ -8,35 +8,13 @@
 </head>
 <body>
     <h1>Votaciones Estudiantiles</h1>
-    <div id="representantes">
-        <h2>Representantes</h2>
-        <ul>
-            <li>
-                <img src="imagenes/juan.jpg" alt="Juan Pérez" class="foto-representante">
-                <div class="info-representante">
-                    <strong>Juan Pérez</strong>
-                    <div class="propuesta">Promete mejorar las instalaciones deportivas y organizar más actividades extracurriculares.</div>
-                    <button class="btn-votar" onclick="votar('Juan Pérez')">Votar</button>
-                </div>
-            </li>
-            <li>
-                <img src="imagenes/maria.jpg" alt="María López" class="foto-representante">
-                <div class="info-representante">
-                    <strong>María López</strong>
-                    <div class="propuesta">Propone implementar un programa de tutorías entre estudiantes y mejorar la biblioteca.</div>
-                    <button class="btn-votar" onclick="votar('María López')">Votar</button>
-                </div>
-            </li>
-            <li>
-                <img src="imagenes/carlos.jpg" alt="Carlos Gómez" class="foto-representante">
-                <div class="info-representante">
-                    <strong>Carlos Gómez</strong>
-                    <div class="propuesta">Se compromete a fomentar el reciclaje y crear un club de ciencias.</div>
-                    <button class="btn-votar" onclick="votar('Carlos Gómez')">Votar</button>
-                </div>
-            </li>
-        </ul>
-    </div>
+    <!-- Reemplazar la lista estática de representantes por esta versión dinámica -->
+<div id="representantes">
+    <h2>Representantes</h2>
+    <ul id="listaRepresentantes">
+        <!-- Los representantes se cargarán dinámicamente desde JavaScript -->
+    </ul>
+</div>
     <script src="estudiantes.js"></script>
 </body>
 </html>
